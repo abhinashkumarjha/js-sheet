@@ -3,8 +3,8 @@ import EditableElement from './EditableElement';
 import ContextMenu from './ContextMenu';
 
 const CustomTable = () => {
-    let [rows, setRows] = useState(20);
-    let [columns, setColumns] = useState(20);
+    const rows = 20;
+    const columns = 20;
     let [data, setData] = useState([[]]);
     let [showContext, setShowContext] = useState('none');
     let [contextLocation, setContextLocation] = useState({x:0,y:0});
@@ -29,7 +29,6 @@ const CustomTable = () => {
     };
 
     const handleContextClick = (value) =>{
-        console.log(value);
         switch (value) {
             case "Add Column Left":
                 changeColumns(activeCell.x, activeCell.y, 'left')
@@ -43,31 +42,47 @@ const CustomTable = () => {
             case "Add Row Bottom":
                 changeRow(activeCell.x, activeCell.y, 'bottom')
               break;
-            case "Sort Row wise":
+            case "Sort Row wise(Left to Right, asc)":
                 sortRows(activeCell.x, activeCell.y)
               break;
-            case "Sort Column wise":
+            case "Sort Column wise(Top to Bottom, asc)":
                 sortColumns(activeCell.x, activeCell.y)
               break;
+              case "Sort Row wise(Left to Right, dsc)":
+                sortRows(activeCell.x, activeCell.y, 'dsc')
+              break;
+            case "Sort Column wise(Top to Bottom, dsc)":
+                sortColumns(activeCell.x, activeCell.y, 'dsc')
+              break;
+            default: break;
           }
         setShowContext('none')
     }
 
-    const sortRows = (x,y) => {
+    const sortRows = (x,y,type='asc') => {
         let newData = data.map((arr) => arr.slice());
         let currentRow = newData[x];
-        currentRow.sort();
+        if(type === 'dsc'){
+            currentRow.sort((b, a) => (a===null)-(b===null) || +(a>b)||-(a<b));
+        } else {
+            currentRow.sort((a, b) => (a===null)-(b===null) || +(a>b)||-(a<b));
+        }
         newData[x] = currentRow;
         setData(newData);
     }
 
-    const sortColumns = (x,y) => {
+    const sortColumns = (x,y, type='asc') => {
         let newData = data.map((arr) => arr.slice());
         let column = [];
         newData.map(row => {
-            column.push(row[y])
+            column.push(row[y]);
+            return 0
         });
-        column.sort();
+        if(type === 'dsc'){
+            column.sort((b, a) => (a===null)-(b===null) || +(a>b)||-(a<b));
+        } else {
+            column.sort((a, b) => (a===null)-(b===null) || +(a>b)||-(a<b));
+        }
         newData.map((item, index) => newData[index][y]= column[index]);
         setData(newData);
     }
@@ -98,7 +113,7 @@ const CustomTable = () => {
         let newData = data.map((arr) => arr.slice());
         if(type==='left'){
             if(y >= 0){
-                newData = newData.map( (item,index)=>{
+                newData = newData.map( (item)=>{
                         return [
                             ...item.slice(0, y-1),
                             null,
@@ -108,7 +123,7 @@ const CustomTable = () => {
             }
         } else if(type === 'right'){
             if(y >= 0){
-                newData = newData.map( (item , index)=>{
+                newData = newData.map( (item)=>{
                         return [
                             ...item.slice(0, y+1),
                             null,
@@ -121,9 +136,11 @@ const CustomTable = () => {
     } 
 
     const handleDataChange = (value, x, y) => {
-        let newData = data.map((arr) => arr.slice());
-        newData[x][y] = value;
-        setData(newData);
+        if(value){
+            let newData = data.map((arr) => arr.slice());
+            newData[x][y] = value;
+            setData(newData);
+        }
     }
 
     const handleStructureChange = (x,y) =>{
@@ -131,16 +148,54 @@ const CustomTable = () => {
         setShowContext('none');
     }
 
+    const cleanFunctionItem = (item, functionType) =>{
+        let t = item.split("{");
+        let u = t[1].split("}")
+        let exp =u[0];
+        if(functionType === '+'){
+            let arr = []
+            let pos = exp.split('+');
+            pos.map(item => {
+                let a = item.split('(');
+                let b = a[1].split(')');
+                let [x,y] = b[0].split(',');
+                arr.push({x,y});
+                return 0;
+            });
+            return arr;
+        }
+    }
+
+    const resolveFunctions = (item,functionType) =>{
+        let functionItem = cleanFunctionItem(item, functionType);
+        if(functionType === '+'){
+            let sum = 0;
+            functionItem.map(cell =>{ 
+                sum = sum + parseInt(data[parseInt(cell.x)][parseInt(cell.y)])
+                return 0
+            });
+            return sum
+        }
+        return item;
+    }
+
     const renderTable = () => {
-        console.log(data);
         return data.map((row, i) =>
             (<tr key={i}>
-                {
+                {   
                     row.map((item, j) => {
+                        let functionType = null;
+                        if(item && 
+                            (item.includes("sum") || item.includes("SUM")) && 
+                            (item.includes("{") && item.includes("}")) && 
+                            (item.includes('+') || item.includes(":"))
+                        ){
+                            functionType = '+'
+                        }
                         return (<td key={`${i}-${j}`}>
                             <EditableElement onSelect={handleStructureChange} onChange={handleDataChange} x={i} y={j}>
                                 <div className='cell' onContextMenu={handleCellContextMenuClick}  x={i} y={j}>
-                                    {item}
+                                    {functionType ? resolveFunctions(item, functionType) :item}
                                 </div>
                             </EditableElement>
                         </td>)
