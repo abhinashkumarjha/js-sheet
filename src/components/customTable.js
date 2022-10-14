@@ -56,7 +56,7 @@ const CustomTable = () => {
     const sortRows = (x,y) => {
         let newData = data.map((arr) => arr.slice());
         let currentRow = newData[x];
-        currentRow.sort((x,y) =>x-y);
+        currentRow.sort();
         newData[x] = currentRow;
         setData(newData);
     }
@@ -67,7 +67,7 @@ const CustomTable = () => {
         newData.map(row => {
             column.push(row[y])
         });
-        column.sort((x,y)=>x-y);
+        column.sort();
         newData.map((item, index) => newData[index][y]= column[index]);
         setData(newData);
     }
@@ -128,19 +128,24 @@ const CustomTable = () => {
 
     const handleStructureChange = (x,y) =>{
         setActiveCell({x,y});
+        setShowContext('none');
     }
 
     const renderTable = () => {
         console.log(data);
         return data.map((row, i) =>
             (<tr key={i}>
-                {row.map((item, j) => <td key={`${i}-${j}`}>
-                    <EditableElement onSelect={handleStructureChange} onChange={handleDataChange} x={i} y={j}>
-                        <div className='cell' onContextMenu={handleCellContextMenuClick}  x={i} y={j}>
-                            {item}
-                        </div>
-                    </EditableElement>
-                </td>)}
+                {
+                    row.map((item, j) => {
+                        return (<td key={`${i}-${j}`}>
+                            <EditableElement onSelect={handleStructureChange} onChange={handleDataChange} x={i} y={j}>
+                                <div className='cell' onContextMenu={handleCellContextMenuClick}  x={i} y={j}>
+                                    {item}
+                                </div>
+                            </EditableElement>
+                        </td>)
+                    })
+                }
             </tr>)
         )
     }
