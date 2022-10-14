@@ -1,12 +1,22 @@
-# Getting Started with Create React App
+# JS-Sheet
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A demo project for JS like sheet. Live link: https://js-sheet.herokuapp.com/
 
+## Available Features
+● The sheet should have m * n cells, assume default as 20*20 cells.
+● New rows and columns can be added similar to how it’s added in google sheets -> Right Click on Cell
+● Features to sort the sheet A -> Z and Z -> A on each column should be allowed. Sorting should be with respect to that column. -> Right Click on Cell
+● Insert column to right/left of that column -> Right Click on Cell
+● Insert rows to top/bottom of that row -> Right Click on Cell
+● Support for adding formula functionality covering ‘SUM’. 
+### sum usage
+use the template `sum{(0,0)+(1,1)+(1,2)}` or `sum{(0,0)+(1,1)+(1,2)}`
+where (0,0), (1,1) and (2,2). The Co-ordinates starts at (x,y) with the top leftmost cell and increases as we move right or down
 ## Available Scripts
 
 In the project directory, you can run:
 
-### `npm start`
+### `npm run dev`
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
