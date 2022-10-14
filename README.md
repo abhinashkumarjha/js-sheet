@@ -10,8 +10,7 @@ A demo project for JS like sheet. Live link: https://js-sheet.herokuapp.com/
 ● Insert rows to top/bottom of that row -> Right Click on Cell
 ● Support for adding formula functionality covering ‘SUM’. 
 ### sum usage
-use the template `sum{(0,0)+(1,1)+(1,2)}` or `sum{(0,0)+(1,1)+(1,2)}`
-where (0,0), (1,1) and (2,2). The Co-ordinates starts at (x,y) with the top leftmost cell and increases as we move right or down
+use the template `sum{(0,0)+(1,1)+(1,2)}` or `sum{(0,0)+(1,1)+(1,2)}` where (0,0), (1,1) and (2,2) are the Co-ordinates of cells. It starts at (x,y) as (0,0) with the top leftmost cell and increases as we move right or down
 ## Available Scripts
 
 In the project directory, you can run:
